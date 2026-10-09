@@ -1,5 +1,7 @@
+from pathlib import Path
 import pygame
 import math
+
 class Car: 
     def __init__(self, x, y, color):
         self.x = x
@@ -7,10 +9,8 @@ class Car:
         self.color = color
         self.speed = 0
         self.angle = 0
-        self.image = pygame.Surface((50, 30), pygame.SRCALPHA)
-        self.image.fill(self.color)
-        self.image = pygame.transform.rotate(self.image, -self.angle)  # Rotate the car image based on the angle
-        self.rect = self.image.get_rect(center=(self.x, self.y))
+        self.image = pygame.image.load(Path(__file__).parent / "assets" / "car.png").convert_alpha()
+        self.image = pygame.transform.smoothscale(self.image, (50, 30))  # Scale the car image to a smaller size
 
     def move(self):
         # Update position based on speed
@@ -25,8 +25,7 @@ class Car:
     def draw(self, screen):
         # Draw the car as a rectangle for simplicity
         rotated = pygame.transform.rotate(self.image, -self.angle)  # Rotate the car image based on the angle
-        screen.blit(rotated, self.image.get_rect(center=(self.x, self.y)))
-        self.image.fill(self.color)
+        screen.blit(rotated, rotated.get_rect(center=(self.x, self.y)))
         
 
     def accelerate(self, amount):
