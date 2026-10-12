@@ -1,12 +1,14 @@
 import pygame
 from Car import Car
+from Track import Track
 
 pygame.init()
 screen = pygame.display.set_mode((1200, 800))
 clock = pygame.time.Clock()
 running = True
 
-car = Car(0, 600, (255, 0, 0))        # create a car instance
+track = Track()
+car = Car(track.start["x"], track.start["y"], track.start["angle"])  # create a car instance
 
 while running:
     
@@ -26,8 +28,8 @@ while running:
         
     # 2. update game state here
     car.move()
-    screen.fill((30, 30, 30))   
-    car.draw(screen)          # 3. draw
+    track.draw(screen)
+    car.draw(screen)
     pygame.display.flip()                 # show the frame
     clock.tick(60)                        # cap at 60 FPS
 
