@@ -3,6 +3,7 @@ import pygame
 import math
 
 class Car: 
+
     def __init__(self, x, y, angle):
         self.x = x
         self.y = y 
@@ -18,15 +19,20 @@ class Car:
         self.speed *= 0.95  # Apply friction to gradually slow down the car
         if self.speed < 0.001 and self.speed > -0.001:
             self.speed = 0  # Stop the car if speed is very low
-        self.x = max(0, min(self.x, 1200))  # Keep the car within the screen bounds
-        self.y = max(0, min(self.y, 800))   # Keep the car within the screen bounds
         
     def draw(self, screen):
         # Draw the car as a custom image rotated based on the angle
-        rotated = pygame.transform.rotate(self.image, -self.angle)  # Rotate the car image based on the angle
-        screen.blit(rotated, rotated.get_rect(center=(self.x, self.y)))
+        rotated_image, rect = self.rotated()
+        screen.blit(rotated_image, rect.topleft)
         
-
+    def rotated(self):
+        rotated = pygame.transform.rotate(self.image, -self.angle)
+        rect = rotated.get_rect(center=(self.x, self.y))
+        return rotated, rect
+    def get_mask(self):
+        rotated_image, _ = self.rotated()
+        return pygame.mask.from_surface(rotated_image)
+    
     def accelerate(self, amount):
         # Increase speed in the direction of the angle
         self.speed += amount

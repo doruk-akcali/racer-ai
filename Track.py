@@ -15,4 +15,8 @@ class Track:
 
     def draw(self, screen):
         screen.blit(self.track_image, (0, 0))
+
+    def collides(self, mask, rect):
+        return self.track_mask.overlap(mask, (rect.x, rect.y)) is not None
+       
     

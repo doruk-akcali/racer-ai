@@ -29,8 +29,13 @@ while running:
     # 2. update game state here
     car.move()
     track.draw(screen)
-    car.draw(screen)
-    pygame.display.flip()                 # show the frame
-    clock.tick(60)                        # cap at 60 FPS
+    
 
+    car_mask = car.get_mask()  # get the car's collision mask
+    if track.collides(car_mask, car.rotated()[1]):
+        car.reset(**track.start)  # reset the car to the starting position and angle
+
+    car.draw(screen)
+    pygame.display.flip()    
+    clock.tick(60)             # show the frame
 pygame.quit()
