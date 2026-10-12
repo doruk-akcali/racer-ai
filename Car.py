@@ -4,6 +4,14 @@ import math
 
 class Car: 
 
+    MAX_SPEED = 7 
+    FRAMES_TO_TOP = 90
+    FRICTION = 0.05 **(1/FRAMES_TO_TOP)  # Friction factor to reduce speed over time
+    ACCELERATION = MAX_SPEED * (1 - FRICTION) / FRICTION  # Acceleration factor to reach max speed in FRAMES_TO_TOP frames
+    BRAKING = 0.3
+    TURN_PER_SPEED = 0.6
+    MAX_TURN = 3
+
     def __init__(self, x, y, angle):
         self.x = x
         self.y = y 
@@ -16,7 +24,7 @@ class Car:
         # Update position based on speed
         self.x += self.speed * math.cos(math.radians(self.angle))
         self.y += self.speed * math.sin(math.radians(self.angle))
-        self.speed *= 0.95  # Apply friction to gradually slow down the car
+        self.speed *= self.FRICTION  # Apply friction to gradually slow down the car
         if self.speed < 0.001 and self.speed > -0.001:
             self.speed = 0  # Stop the car if speed is very low
         
@@ -29,23 +37,23 @@ class Car:
         rotated = pygame.transform.rotate(self.image, -self.angle)
         rect = rotated.get_rect(center=(self.x, self.y))
         return rotated, rect
-    def get_mask(self):
-        rotated_image, _ = self.rotated()
-        return pygame.mask.from_surface(rotated_image)
     
-    def accelerate(self, amount):
-        # Increase speed in the direction of the angle
-        self.speed += amount
+    def get_mask(self):
+        rotated_image, rect = self.rotated()
+        return pygame.mask.from_surface(rotated_image), rect
+    
+    def accelerate(self):
+        self.speed += self.ACCELERATION
 
-    def brake(self, amount):
-        # Decrease speed in the direction of the angle
-        self.speed -= amount
+    def brake(self):
+        self.speed -= self.BRAKING
 
-    def turn(self, angle_change):
-        # Change the angle of the car
-        angle_change = angle_change * self.speed / 10  # Adjust turning based on speed
-        self.angle += angle_change
-        self.angle %= 360  # Keep the angle within 0-359 degrees
+    def turn(self, direction):
+        delta_angle = direction * min(self.TURN_PER_SPEED * abs(self.speed), self.MAX_TURN)
+        if self.speed > 0:
+            self.angle += delta_angle
+        else: 
+            self.angle -= delta_angle
 
     def reset(self, x, y, angle):
         # Reset the car's position and angle

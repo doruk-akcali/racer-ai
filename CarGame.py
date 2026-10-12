@@ -8,7 +8,7 @@ clock = pygame.time.Clock()
 running = True
 
 track = Track()
-car = Car(track.start["x"], track.start["y"], track.start["angle"])  # create a car instance
+car = Car(**track.start)  # create a car instance
 
 while running:
     
@@ -18,24 +18,24 @@ while running:
             running = False
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_UP]:
-        car.accelerate(0.5)
+        car.accelerate()
     if pressed[pygame.K_DOWN]:
-        car.brake(0.5)
+        car.brake()
     if pressed[pygame.K_LEFT]:
-        car.turn(-5)
+        car.turn(-1)
     if pressed[pygame.K_RIGHT]:
-        car.turn(5)
+        car.turn(1)
         
     # 2. update game state here
     car.move()
     track.draw(screen)
     
 
-    car_mask = car.get_mask()  # get the car's collision mask
-    if track.collides(car_mask, car.rotated()[1]):
+    car_mask, car_rect = car.get_mask()  # get the car's collision mask
+    if track.collides(car_mask, car_rect):
         car.reset(**track.start)  # reset the car to the starting position and angle
 
     car.draw(screen)
     pygame.display.flip()    
-    clock.tick(60)             # show the frame
+    clock.tick(60)          
 pygame.quit()
