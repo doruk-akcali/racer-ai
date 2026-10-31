@@ -1,3 +1,5 @@
+"""Playable version of the game: drive the car around the track with the arrow keys."""
+
 import pygame
 from Car import Car
 from Track import Track
@@ -8,14 +10,16 @@ clock = pygame.time.Clock()
 running = True
 
 track = Track()
-car = Car(**track.start)  # create a car instance
+car = Car(**track.start)  # Unpacks {"x", "y", "angle"} into Car(x=..., y=..., angle=...)
 
 while running:
     
-    # handle events   
+    # 1. Events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    # 2. Input: polled every frame, so holding a key keeps acting
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_UP]:
         car.accelerate()
@@ -26,16 +30,16 @@ while running:
     if pressed[pygame.K_RIGHT]:
         car.turn(1)
         
-    # 2. update game state here
+    # 3. Update and draw
     car.move()
     track.draw(screen)
     
 
-    car_mask, car_rect = car.get_mask()  # get the car's collision mask
+    car_mask, car_rect = car.get_mask()
     if track.collides(car_mask, car_rect):
-        car.reset(**track.start)  # reset the car to the starting position and angle
+        car.reset(**track.start)  # Crash: back to the start
 
-    car.draw(screen)
+    car.draw(screen)  # After the track, so the car is drawn on top
     pygame.display.flip()    
-    clock.tick(60)          
+    clock.tick(60)  # The physics is per frame, so the frame rate sets the game speed
 pygame.quit()
