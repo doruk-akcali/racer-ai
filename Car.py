@@ -36,6 +36,8 @@ class Car:
         self.image = pygame.transform.smoothscale(self.image, (50, 30))  # car.png is 100x60; draw it at half size
         self.lap = 0
         self.next_checkpoint = 0
+        self.lap_frames = 0  # Frames since the current lap started
+        self.best_lap_frames = None  # None until the first lap is finished
 
     def move(self):
         """Advance one frame: move along the heading, then apply friction."""
@@ -107,12 +109,29 @@ class Car:
         self.speed = 0
         self.next_checkpoint = 0
         self.lap = 0
+        self.lap_frames = 0
 
     def update_progress(self, track, rect):
-        if (track.checkpoint_reached(rect, self.next_checkpoint)):
+        """Advance the lap timer, and count the next checkpoint if the car touches it.
+
+        Only the checkpoint the car is waiting for is checked, so driving
+        backwards, sitting on a line, or crossing the finish line right after
+        the start earns nothing. After the last checkpoint the lap is counted,
+        the best lap time is updated if this lap was faster, and the timer
+        starts again.
+
+        Args:
+            track: The Track, which knows where the checkpoints are.
+            rect: The car's rect for this frame, e.g. from get_mask().
+        """
+        self.lap_frames += 1
+        if track.checkpoint_reached(rect, self.next_checkpoint):
             self.next_checkpoint = (self.next_checkpoint + 1) % len(track.checkpoints)
             if self.next_checkpoint == 0:
-                self.lap += 1   
+                if self.best_lap_frames is None or self.lap_frames < self.best_lap_frames:
+                    self.best_lap_frames = self.lap_frames
+                self.lap += 1
+                self.lap_frames = 0
 
 
 
