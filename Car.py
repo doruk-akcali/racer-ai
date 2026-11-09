@@ -34,6 +34,8 @@ class Car:
         self.angle = angle 
         self.image = pygame.image.load(Path(__file__).parent / "assets" / "car.png").convert_alpha()  # Keep the transparent background around the car
         self.image = pygame.transform.smoothscale(self.image, (50, 30))  # car.png is 100x60; draw it at half size
+        self.lap = 0
+        self.next_checkpoint = 0
 
     def move(self):
         """Advance one frame: move along the heading, then apply friction."""
@@ -103,6 +105,14 @@ class Car:
         self.y = y
         self.angle = angle
         self.speed = 0
+        self.next_checkpoint = 0
+        self.lap = 0
+
+    def update_progress(self, track, rect):
+        if (track.checkpoint_reached(rect, self.next_checkpoint)):
+            self.next_checkpoint = (self.next_checkpoint + 1) % len(track.checkpoints)
+            if self.next_checkpoint == 0:
+                self.lap += 1   
 
 
 

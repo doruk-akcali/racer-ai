@@ -19,11 +19,21 @@ class Track:
         self.track_walls = pygame.image.load(self.assets / "track_walls.png").convert_alpha()
         self.json_data = json.loads((self.assets / "track.json").read_text())
         self.track_mask = pygame.mask.from_surface(self.track_walls)  # Walls are the opaque pixels
-        self.start = self.json_data["start"]  # {"x", "y", "angle"}, ready for Car(**track.start)
+        self.start = self.json_data["start"]  # {"x", "y", "angle"}
+        self.checkpoints = self.json_data["checkpoints"]
 
     def draw(self, screen):
         """Draw the track; it covers the whole screen, so it also erases the last frame."""
         screen.blit(self.track_image, (0, 0))
+
+    def checkpoint_reached(self, rect, i):
+        """Return True if rect touches checkpoint i.
+
+        Args:
+            rect: The rect to test, e.g. the car's rect from Car.get_mask().
+            i: Index of the checkpoint in track.json, in driving order.
+        """
+        return bool(rect.clipline(*self.checkpoints[i]))
 
     def collides(self, mask, rect):
         """Return True if the mask touches a wall.

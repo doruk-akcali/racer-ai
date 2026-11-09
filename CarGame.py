@@ -38,7 +38,8 @@ while running:
     car_mask, car_rect = car.get_mask()
     if track.collides(car_mask, car_rect):
         car.reset(**track.start)  # Crash: back to the start
-
+    else:
+        car.update_progress(track, car_rect)
     car.draw(screen)  # After the track, so the car is drawn on top
     pygame.display.flip()    
     clock.tick(60)  # The physics is per frame, so the frame rate sets the game speed
