@@ -41,6 +41,7 @@ python CarGame.py
 
 - [x] Playable car with physics
 - [x] Track with obstacles and crash detection
+- [x] Checkpoints and laps for each individual Car object
 - [ ] Distance sensors
 - [ ] Neural network "brain"
 - [ ] Genetic algorithm: selection, crossover, mutation
